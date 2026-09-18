@@ -1,0 +1,35 @@
+name: Build SuperClean APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download project
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Extract project
+        run: |
+          unzip -q SuperClean-GitHub-Build-Ready-Fixed.zip -d extracted
+
+      - name: Build APK
+        run: |
+          cd extracted/SuperClean
+          gradle assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SuperClean-APK
+          path: extracted/SuperClean/app/build/outputs/apk/debug/app-debug.apk
